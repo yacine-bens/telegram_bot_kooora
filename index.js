@@ -63,13 +63,17 @@ app.post(URI, async (req, res) => {
 
             let matches = await getMatches();
             response_message = formatMatchesDetails(matches);
-
-            await axios.post(`${TELEGRAM_API}/sendMessage`, {
-                chat_id: chatId,
-                text: response_message
-            })
         }
     }
+    
+    //Respond to user
+    if(response_message != ''){
+        await axios.post(`${TELEGRAM_API}/sendMessage`, {
+            chat_id: chatId,
+            text: response_message
+        })
+    }
+    
     // Respond to Telegram server
     return res.send();
 })
