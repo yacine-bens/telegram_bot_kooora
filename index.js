@@ -56,18 +56,18 @@ app.post(URI, async (req, res) => {
     return res.send();
 })
 
-// app.post(URI + '/respond', async (req, res) => {
-//     let chatId = req.body.chat_id;
-//     console.log('respond', chatId);
-//     // let matches = await getMatches();
-//     // let response_message = formatMatchesDetails(matches);
-//     let response_message = 'from resond endpoint';
+app.post(URI + '/respond', async (req, res) => {
+    let chatId = req.body.chat_id;
+    console.log('respond');
+    // let matches = await getMatches();
+    // let response_message = formatMatchesDetails(matches);
+    let response_message = 'from resond endpoint';
 
-//     await axios.post(`${TELEGRAM_API}/sendMessage`, {
-//         chat_id: chatId,
-//         text: response_message
-//     })
-// })
+    await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: response_message
+    })
+})
 
 app.listen(process.env.PORT || 5000);
 
