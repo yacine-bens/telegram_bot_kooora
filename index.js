@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
@@ -22,8 +23,11 @@ app.get(`/setWebhook`, async (req, res) => {
     return res.send({...response.data, Webhook_Url: WEBHOOK_URL});
 })
 
-// Store last update for each chat (to prevent duplicate)
-let last_update = 0;
+// MongoDB
+const DB_URI = "mongodb+srv://vercel-admin-user:dKkJWnHudcEg8Q5c@cluster0.teexhmd.mongodb.net/test";
+const client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
 
 // app.get('/matches', async (req, res) => {
 //     let matches = await getMatches();
@@ -33,7 +37,7 @@ let last_update = 0;
 
 // Receive messages
 app.post(URI, async (req, res) => {
-    console.log(req.body, last_update);
+    console.log(req.body);
 
     // Check if update is a message
     if (!req.body.message || !req.body.message.text) return res.send();
@@ -43,11 +47,15 @@ app.post(URI, async (req, res) => {
     const messageText = req.body.message.text;
 
     // Check if update is repeated
-    if(parseInt(updateId) > parseInt(last_update)){
-        last_update = updateId;
+    let db = await client.connect();
+    let collection = db.db('kooora').collection('updates');
+    let result = await collection.findOne();
+    if(parseInt(updateId) > parseInt(result.last_update)){
+        await collection.updateOne({last_update: result.last_update}, {$set: {last_update: updateId}});
     }
     else{
-        return res.send();
+        // repeated
+        return res.send()
     }
 
     let response_message = '';
