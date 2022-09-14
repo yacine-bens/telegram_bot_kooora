@@ -50,7 +50,7 @@ app.post(URI, async (req, res) => {
                 text: 'Please wait while we fetch today\'s matches...'
             })
 
-            axios.post(URI + '/respond', {
+            axios.post(WEBHOOK_URL + '/respond', {
                 chat_id: chatId
             })
 
