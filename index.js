@@ -49,6 +49,8 @@ app.post(URI, async (req, res) => {
                 chat_id: chatId,
                 text: 'Please wait while we fetch today\'s matches...'
             })
+
+            res.send();
             
             let matches = await getMatches();
             response_message = formatMatchesDetails(matches);
