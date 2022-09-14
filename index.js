@@ -48,7 +48,12 @@ app.post(URI, async (req, res) => {
         updates[chatId] = updateId;
     }
     // Repeating
-    else if(updates[chatId] === updateId) return res.send();
+    else if(updates[chatId] === updateId){
+        return res.send();
+    }
+    else{
+        updates[chatId] = updateId;
+    }
 
     let response_message = '';
     
