@@ -57,11 +57,6 @@ app.post(URI, async (req, res) => {
 
             res.send();
 
-            await axios.post(`${TELEGRAM_API}/sendMessage`, {
-                chat_id: chatId,
-                text: 'Please wait...'
-            })
-
             let matches = await getMatches();
             response_message = formatMatchesDetails(matches);
         }
