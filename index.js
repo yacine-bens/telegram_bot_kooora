@@ -33,7 +33,7 @@ let last_update = 0;
 
 // Receive messages
 app.post(URI, async (req, res) => {
-    console.log(req.body, updates);
+    console.log(req.body, last_update);
 
     // Check if update is a message
     if (!req.body.message || !req.body.message.text) return res.send();
