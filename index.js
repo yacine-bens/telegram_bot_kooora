@@ -45,11 +45,20 @@ app.post(URI, async (req, res) => {
         if(messageText != '/start' && messageText != '/matches') response_message = 'Please enter a valid bot command.';
         if(messageText === '/matches'){
             // Send "Please wait while we get todays matches..." message to user
+            // await axios.post(`${TELEGRAM_API}/sendMessage`, {
+            //     chat_id: chatId,
+            //     text: 'Please wait while we fetch today\'s matches...'
+            // })
+
+            let matches = await getMatches();
+            response_message = formatMatchesDetails(matches);
+
             await axios.post(`${TELEGRAM_API}/sendMessage`, {
                 chat_id: chatId,
-                text: 'Please wait while we fetch today\'s matches...'
+                text: response_message
             })
-            return res.send();
+
+            // return res.send();
         }
     }
     // Respond to Telegram server
