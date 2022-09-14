@@ -9,7 +9,7 @@ const { JSDOM } = jsdom;
 // Telegram bot
 const { TOKEN, SERVER_URL } = process.env;
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
-const URI = `webhook/${TOKEN}`;
+const URI = `/webhook/${TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
 
 const app = express();
@@ -83,7 +83,7 @@ app.post(URI, async (req, res) => {
 app.listen(process.env.PORT || 5000, async () => {
     console.log('App is listening on port', process.env.PORT || 5000);
     const response = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
-    console.log(response.data);
+    console.log({...response.data, webhook: WEBHOOK_URL});
 });
 
 
