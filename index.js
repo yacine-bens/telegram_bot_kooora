@@ -50,23 +50,26 @@ app.post(URI, async (req, res) => {
                 text: 'Please wait while we fetch today\'s matches...'
             })
 
-            res.send();
-            
-            let matches = await getMatches();
-            response_message = formatMatchesDetails(matches);
+            axios.post(URI + '/respond', {
+                chat_id: chatId
+            })
+
+            return res.send();
         }
     }
-
-    // Respond to user
-    if(response_message != ''){
-        await axios.post(`${TELEGRAM_API}/sendMessage`, {
-            chat_id: chatId,
-            text: response_message
-        })
-    }
-
     // Respond to Telegram server
     return res.send();
+})
+
+app.post(URI + '/respond', async (req, res) => {
+    let chatId = req.body.chat_id;
+    let matches = await getMatches();
+    let response_message = formatMatchesDetails(matches);
+
+    await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: chatId,
+        text: response_message
+    })
 })
 
 app.listen(process.env.PORT || 5000);
