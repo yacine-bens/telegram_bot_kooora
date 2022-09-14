@@ -63,12 +63,12 @@ app.post(URI + '/respond', async (req, res) => {
     // let response_message = formatMatchesDetails(matches);
     let response_message = 'from resond endpoint';
 
-    await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: chatId,
-        text: response_message
-    })
+    // await axios.post(`${TELEGRAM_API}/sendMessage`, {
+    //     chat_id: chatId,
+    //     text: response_message
+    // })
 
-    return res.send();
+    return res.send({chat_id: chatId});
 })
 
 app.listen(process.env.PORT || 5000);
