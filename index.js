@@ -43,8 +43,8 @@ app.post(URI, async (req, res) => {
     const messageText = req.body.message.text;
 
     // Check if update is repeated
-    if(parseInt(updateId) > last_update){
-        last_update = update_id;
+    if(parseInt(updateId) > parseInt(last_update)){
+        last_update = updateId;
     }
     else{
         return res.send();
