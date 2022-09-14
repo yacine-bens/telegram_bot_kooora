@@ -19,9 +19,11 @@ app.use(bodyParser.json());
 // Set webhook manually by visiting link
 app.get(`/setWebhook`, async (req, res) => {
     const response = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
-    return res.send(response.data);
+    return res.send({...response.data, Webhook_Url: WEBHOOK_URL});
 })
 
+// Store last update for each chat (to prevent duplicate)
+let updates = {};
 
 // app.get('/matches', async (req, res) => {
 //     let matches = await getMatches();
@@ -36,11 +38,20 @@ app.post(URI, async (req, res) => {
     // Check if update is a message
     if (!req.body.message || !req.body.message.text) return res.send();
 
+    const updateId = req.body.update_id;
     const chatId = req.body.message.chat.id;
     const messageText = req.body.message.text;
 
-    let response_message = '';
+    // Check if update is repeated
+    // First time
+    if(!updates[chatId]){
+        updates[chatId] = updateId;
+    }
+    // Repeating
+    else if(updates[chatId] === updateId) return res.send();
 
+    let response_message = '';
+    
     if (isBotCommand(req.body.message)) {
         if(messageText != '/start' && messageText != '/matches') response_message = 'Please enter a valid bot command.';
         if(messageText === '/matches'){
