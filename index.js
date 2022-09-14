@@ -7,8 +7,7 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
 // Telegram bot
-const { TOKEN, VERCEL_URL } = process.env;
-const SERVER_URL = `https://${VERCEL_URL}`;
+const { TOKEN, SERVER_URL } = process.env;
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 const URI = `/webhook/${TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
@@ -17,22 +16,9 @@ const app = express();
 app.use(bodyParser.json());
 
 
-// Set webhook manually by visiting link
-app.get(`/setWebhook`, async (req, res) => {
-    const response = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
-    return res.send({...response.data, Webhook_Url: WEBHOOK_URL});
-})
-
 // MongoDB
 const DB_URI = "mongodb+srv://vercel-admin-user:dKkJWnHudcEg8Q5c@cluster0.teexhmd.mongodb.net/test";
 const client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
-
-
-// app.get('/matches', async (req, res) => {
-//     let matches = await getMatches();
-//     return res.send(matches);
-// })
 
 
 // Receive messages
@@ -50,51 +36,55 @@ app.post(URI, async (req, res) => {
     let db = await client.connect();
     let collection = db.db('kooora').collection('updates');
     let result = await collection.findOne();
-    if(parseInt(updateId) > parseInt(result.last_update)){
-        await collection.updateOne({last_update: result.last_update}, {$set: {last_update: updateId}});
+    if (parseInt(updateId) > parseInt(result.last_update)) {
+        await collection.updateOne({ last_update: result.last_update }, { $set: { last_update: updateId } });
     }
-    else{
+    else {
         // repeated
         return res.send()
     }
 
     let response_message = '';
-    
+
     if (isBotCommand(req.body.message)) {
-        if(messageText != '/start' && messageText != '/matches') response_message = 'Please enter a valid bot command.';
-        if(messageText === '/matches'){
+        if (messageText != '/start' && messageText != '/matches') response_message = 'Please enter a valid bot command.';
+        if (messageText === '/matches') {
             // Send "Please wait while we get todays matches..." message to user
             await axios.post(`${TELEGRAM_API}/sendMessage`, {
                 chat_id: chatId,
                 text: 'Please wait while we fetch today\'s matches...'
             })
-            
+
             res.send();
-            
+
             await axios.post(`${TELEGRAM_API}/sendMessage`, {
                 chat_id: chatId,
                 text: 'Please wait...'
             })
-            
+
             let matches = await getMatches();
             response_message = formatMatchesDetails(matches);
         }
     }
-    
+
     //Respond to user
-    if(response_message != ''){
+    if (response_message != '') {
         await axios.post(`${TELEGRAM_API}/sendMessage`, {
             chat_id: chatId,
             text: response_message
         })
     }
-    
+
     // Respond to Telegram server
     return res.send();
 })
 
 
-app.listen(process.env.PORT || 5000);
+app.listen(process.env.PORT || 5000, async () => {
+    console.log('App is listening on port', process.env.PORT || 5000);
+    const response = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
+    console.log(response.data);
+});
 
 
 function isBotCommand(msg) {
@@ -155,7 +145,7 @@ async function getTeam(id) {
 }
 
 
-function formatMatchesDetails(matches){
+function formatMatchesDetails(matches) {
     let message = '';
     matches.forEach(match => {
         message += `${match['time']}\n${match['team1']} -- ${match['team2']}\n\n`;
