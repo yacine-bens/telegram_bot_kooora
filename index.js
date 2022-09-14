@@ -68,7 +68,13 @@ app.post(URI + '/respond', async (req, res) => {
     //     text: response_message
     // })
 
-    return res.send({chat_id: chatId});
+    let res_object = {
+        message: 'some message',
+        another: 'thing',
+        here: '!'
+    }
+
+    return res.send(res_object);
 })
 
 app.listen(process.env.PORT || 5000);
