@@ -23,7 +23,7 @@ app.get(`/setWebhook`, async (req, res) => {
 })
 
 // Store last update for each chat (to prevent duplicate)
-let updates = {};
+let last_update = 0;
 
 // app.get('/matches', async (req, res) => {
 //     let matches = await getMatches();
@@ -43,16 +43,11 @@ app.post(URI, async (req, res) => {
     const messageText = req.body.message.text;
 
     // Check if update is repeated
-    // First time
-    if(!updates[chatId]){
-        updates[chatId] = updateId;
-    }
-    // Repeating
-    else if(updates[chatId] === updateId){
-        return res.send();
+    if(parseInt(updateId) > last_update){
+        last_update = update_id;
     }
     else{
-        updates[chatId] = updateId;
+        return res.send();
     }
 
     let response_message = '';
