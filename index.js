@@ -143,7 +143,19 @@ async function getTeam(id) {
 function formatMatchesDetails(matches) {
     let message = '';
     matches.forEach(match => {
-        message += `${match['time']}\n${match['team1']} -- ${match['team2']}\n\n`;
+        let time = cleanUpTime(match['time']);
+        message += `${time}\n${match['team1']} -- ${match['team2']}\n\n`;
     });
     return message;
+}
+
+
+function cleanUpTime(time){
+    let cleanedUpTime;
+    const allowed_chars = [":", "'"];
+    let special_chars = time.match(/\D/g);
+    if(special_chars){
+        special_chars.forEach(char => { if(!allowed_chars.includes(char)) cleanedUpTime = time.replace(char, '').trim()});
+    }
+    return cleanedUpTime;
 }
