@@ -151,11 +151,11 @@ function formatMatchesDetails(matches) {
 
 
 function cleanUpTime(time){
-    let cleanedUpTime;
+    let cleanedUpTime = time;
     const allowed_chars = [":", "'"];
     let special_chars = time.match(/\D/g);
     if(special_chars){
-        special_chars.forEach(char => { if(!allowed_chars.includes(char)) cleanedUpTime = time.replace(char, '').trim()});
+        special_chars.forEach(char => { if(!allowed_chars.includes(char)) cleanedUpTime = cleanedUpTime.replace(char, '').trim()});
     }
     return cleanedUpTime;
 }
