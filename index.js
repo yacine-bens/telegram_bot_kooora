@@ -58,7 +58,8 @@ app.post(URI, async (req, res) => {
             res.send();
 
             let matches = await getMatches();
-            response_message = formatMatchesDetails(matches);
+            if(matches.length) response_message = formatMatchesDetails(matches);
+            else response_message = 'No matches today!';
         }
     }
 
@@ -99,10 +100,12 @@ async function getMatches() {
 
     const { document } = (new JSDOM(res.data)).window;
     let matchesScript = [...document.querySelectorAll('script')].filter(el => el.innerHTML.includes('match_box'))[0];
-    let matchesIDs = matchesScript.innerHTML.split('var match_box = new Array (')[1].split(')')[0].split('\n').map(el => el.length < 10 ? null : el.split(',')[1]).filter(e => e != null);
-    for (let matchId of matchesIDs) {
-        let match = await getMatch(matchId);
-        matches.push(match);
+    if(matchesScript){
+        let matchesIDs = matchesScript.innerHTML.split('var match_box = new Array (')[1].split(')')[0].split('\n').map(el => el.length < 10 ? null : el.split(',')[1]).filter(e => e != null);
+        for (let matchId of matchesIDs) {
+            let match = await getMatch(matchId);
+            matches.push(match);
+        }
     }
 
     return matches;
